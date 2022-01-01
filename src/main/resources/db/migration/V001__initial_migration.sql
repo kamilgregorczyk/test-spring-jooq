@@ -20,14 +20,14 @@ CREATE TABLE note
     id          BIGSERIAL PRIMARY KEY,
     description VARCHAR(255) NOT NULL,
     title       VARCHAR(255) NOT NULL,
-    recipe_id   BIGINT REFERENCES recipe (id)
+    recipe_id   BIGINT REFERENCES recipe (id) ON DELETE CASCADE
 );
 CREATE INDEX note_recipe_id_idx ON note (recipe_id);
 
 CREATE TABLE recipe_to_category
 (
     id          BIGSERIAL PRIMARY KEY,
-    recipe_id   BIGINT REFERENCES recipe (id),
-    category_id BIGINT REFERENCES category (id)
+    recipe_id   BIGINT REFERENCES recipe (id) ON DELETE CASCADE,
+    category_id BIGINT REFERENCES category (id) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX recipe_categories_idx ON recipe_to_category (recipe_id, category_id);
