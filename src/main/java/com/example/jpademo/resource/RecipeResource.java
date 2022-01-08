@@ -56,7 +56,7 @@ public class RecipeResource {
         final var categories = request.categories.stream().map(this::getOrCreateCategory).collect(toUnmodifiableSet());
         recipeToCategoryRepository.save(recipe, categories);
         request.notes.forEach(noteRequest -> createNote(noteRequest, recipe));
-        return status(CREATED).body(Map.of("id", recipeRepository.save(recipe).id()));
+        return status(CREATED).body(Map.of("id", recipe.id()));
     }
 
     @GetMapping("/recipes/{id}")

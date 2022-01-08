@@ -1,9 +1,7 @@
 package com.example.jpademo.repository;
 
 import com.example.jpademo.model.Note;
-import org.jooq.Condition;
 import org.jooq.DSLContext;
-import org.jooq.generated.default_schema.Tables;
 import org.jooq.generated.default_schema.tables.records.NoteRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -32,13 +30,11 @@ public class NoteRepository extends JooqRepository<Note, NoteRecord, Long> {
     }
 
     @Override
-    protected NoteRecord toRecord(Note model) {
-        return new NoteRecord(
-            model.hasId() ? model.id() : null,
-            model.description(),
-            model.title(),
-            model.recipeId()
-        );
+    protected NoteRecord toRecord(NoteRecord emptyRecord, Note model) {
+        return emptyRecord
+            .setDescription(model.description())
+            .setTitle(model.title())
+            .setRecipeId(model.recipeId());
     }
 
     public List<Note> findAllByRecipeId(Long recipeId) {

@@ -33,11 +33,8 @@ public class RecipeRepository extends JooqRepository<Recipe, RecipeRecord, Long>
     }
 
     @Override
-    protected RecipeRecord toRecord(Recipe recipe) {
-        return new RecipeRecord(
-            recipe.hasId() ? recipe.id() : null,
-            recipe.description(),
-            recipe.title()
-        );
+    protected RecipeRecord toRecord(RecipeRecord record, Recipe recipe) {
+        return record.setTitle(recipe.title())
+            .setDescription(recipe.description());
     }
 }

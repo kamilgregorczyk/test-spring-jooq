@@ -24,8 +24,8 @@ public class CategoryRepository extends JooqRepository<Category, CategoryRecord,
     }
 
     @Override
-    protected CategoryRecord toRecord(Category model) {
-        return new CategoryRecord(model.hasId() ? model.id() : null, model.title());
+    protected CategoryRecord toRecord(CategoryRecord emptyRecord, Category model) {
+        return emptyRecord.setTitle(model.title());
     }
 
     public Optional<Category> findByTitle(String title) {

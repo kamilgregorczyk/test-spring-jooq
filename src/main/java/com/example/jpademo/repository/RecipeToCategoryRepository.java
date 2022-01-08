@@ -41,12 +41,10 @@ public class RecipeToCategoryRepository extends JooqRepository<RecipeToCategory,
     }
 
     @Override
-    protected RecipeToCategoryRecord toRecord(RecipeToCategory model) {
-        return new RecipeToCategoryRecord(
-            model.hasId() ? model.id() : null,
-            model.recipeId(),
-            model.categoryId()
-        );
+    protected RecipeToCategoryRecord toRecord(RecipeToCategoryRecord emptyRecord, RecipeToCategory model) {
+        return emptyRecord
+            .setCategoryId(model.categoryId())
+            .setRecipeId(model.recipeId());
     }
 
     public List<Category> findAllByRecipeId(Long id) {
@@ -62,7 +60,7 @@ public class RecipeToCategoryRepository extends JooqRepository<RecipeToCategory,
         ctx.batch(
             categories.stream()
                 .map(c -> {
-                        final var record = toRecord(RecipeToCategory.recipeToCategory()
+                        final var record = toRecord(ctx.newRecord(RECIPE_TO_CATEGORY), RecipeToCategory.recipeToCategory()
                             .recipeId(recipe.id())
                             .categoryId(c.id())
                             .build());

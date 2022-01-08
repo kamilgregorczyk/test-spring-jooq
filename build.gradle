@@ -1,3 +1,6 @@
+import org.jooq.meta.jaxb.ForcedType
+import org.jooq.meta.jaxb.Generate
+
 plugins {
     id 'org.springframework.boot' version '2.6.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
@@ -55,5 +58,15 @@ tasks {
         outputDirectory.set(project.layout.buildDirectory.dir("generated-jooq"))
         excludeFlywayTable = true
         outputSchemaToDefault = ["public"]
+        customizeGenerator {
+            it.withGenerate(new Generate()
+                .withDaos(false)
+                .withDeprecated(false)
+                .withFluentSetters(true)
+                .withImmutablePojos(false)
+                .withJavaTimeTypes(false)
+                .withRecords(true)
+                .withRelations(true))
+        }
     }
 }

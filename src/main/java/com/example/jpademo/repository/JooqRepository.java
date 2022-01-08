@@ -6,7 +6,7 @@ import org.jooq.*;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class JooqRepository<MODEL extends JooqModel<ID>, RECORD extends UpdatableRecord<RECORD>, ID> {
+public abstract class JooqRepository<MODEL extends JooqModel<ID, ?>, RECORD extends UpdatableRecord<RECORD>, ID> {
 
     protected final DSLContext ctx;
     private final Table<RECORD> table;
@@ -17,18 +17,17 @@ public abstract class JooqRepository<MODEL extends JooqModel<ID>, RECORD extends
     }
 
     public MODEL save(MODEL model) {
-        if (model.isPersisted()) {
-            final var updatedRecord = ctx.update(table).set(toRecord(model)).where(idField().eq(model.id())).returning().fetchOne();
-            return fromRecord(updatedRecord);
-
-        } else {
-            final var preparedRecord = toRecord(model);
-            if (preparedRecord.get(idField()) == null) {
-                preparedRecord.changed(idField(), false);
-            }
-            final var insertedRecord = ctx.insertInto(table).set(preparedRecord).returning().fetchOne();
-            return fromRecord(insertedRecord);
+        final var emptyRecord = ctx.newRecord(table);
+        if (model.hasId()) {
+            emptyRecord.set(idField(), model.id());
         }
+        final var record = toRecord(emptyRecord, model);
+        if (model.isPersisted()) {
+            record.update();
+        } else {
+            record.insert();
+        }
+        return fromRecord(record);
     }
 
     public Optional<MODEL> findOneWhere(Condition condition) {
@@ -45,7 +44,7 @@ public abstract class JooqRepository<MODEL extends JooqModel<ID>, RECORD extends
 
     protected abstract MODEL fromRecord(RECORD record);
 
-    protected abstract RECORD toRecord(MODEL model);
+    protected abstract RECORD toRecord(RECORD emptyRecord, MODEL model);
 
     private Field<ID> idField() {
         return (Field<ID>) table.field("id");

@@ -11,7 +11,7 @@ import java.util.Optional;
 @EqualsAndHashCode
 @Accessors(fluent = true)
 @SuperBuilder
-public abstract class JooqModel<ID> {
+public abstract class JooqModel<ID, BUILDER> {
     private Optional<ID> id = Optional.empty();
     private boolean isPersisted;
 
@@ -20,10 +20,12 @@ public abstract class JooqModel<ID> {
     }
 
     public boolean hasId() {
-        if(id == null){
+        if (id == null) {
             return false;
         } else {
             return id.isPresent();
         }
     }
+
+    public abstract BUILDER toBuilder();
 }
